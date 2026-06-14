@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(curl -s -X POST https://script.google.com/macros/s/AKfycbw9S7s2Tnt24BhNnij-oBBbjR5rzl_tKdMvRttF3ZR7vQTw4a4r2XoX6Yrh5jaPZeMbHQ/exec -H 'Content-Type: text/plain' -d '{\"descricao\":\"Parcela 3\",\"valor\":400,\"data\":\"2026-06-11\"}')",
-      "Bash(curl -s -L -X POST https://script.google.com/macros/s/AKfycbw9S7s2Tnt24BhNnij-oBBbjR5rzl_tKdMvRttF3ZR7vQTw4a4r2XoX6Yrh5jaPZeMbHQ/exec -H 'Content-Type: text/plain' -d '{\"descricao\":\"Parcela 3\",\"valor\":400,\"data\":\"2026-06-11\"}')"
+      "Bash(curl -s -L -X POST https://script.google.com/macros/s/AKfycbw9S7s2Tnt24BhNnij-oBBbjR5rzl_tKdMvRttF3ZR7vQTw4a4r2XoX6Yrh5jaPZeMbHQ/exec -H 'Content-Type: text/plain' -d '{\"descricao\":\"Parcela 3\",\"valor\":400,\"data\":\"2026-06-11\"}')",
+      "Bash(netlify status *)"
     ]
   }
 }

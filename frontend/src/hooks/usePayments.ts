@@ -67,7 +67,7 @@ export function usePayments() {
     }
   }, [seedInitialPayments])
 
-  const addPayment = useCallback(async (amount: number, date: string, descricao: string) => {
+  const addPayment = useCallback(async (amount: number, date: string, descricao: string): Promise<boolean> => {
     if (!isApiConfigured()) {
       setPayments(prev => [...prev, {
         id: `LOCAL_${Date.now()}`,
@@ -75,7 +75,7 @@ export function usePayments() {
         valor: amount,
         data: date,
       }])
-      return
+      return true
     }
     try {
       setSaving(true)
@@ -89,9 +89,11 @@ export function usePayments() {
       const result = await response.json()
       if (!result.success) throw new Error(result.message)
       setPayments(prev => [...prev, result.data as Payment])
+      return true
     } catch (err) {
       setError('Erro ao salvar pagamento. Tente novamente.')
       console.error('[Quitax] Erro ao salvar:', err)
+      return false
     } finally {
       setSaving(false)
     }

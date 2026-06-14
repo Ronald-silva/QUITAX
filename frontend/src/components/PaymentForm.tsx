@@ -1,34 +1,40 @@
 import { useState } from 'react'
-import { PlusCircle, Loader2, X, CalendarIcon } from 'lucide-react'
+import { PlusCircle, Loader2, X, CalendarIcon, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { getTodayLocal } from '@/lib/utils'
 
 interface PaymentFormProps {
-  onSubmit: (amount: number, date: string, descricao: string) => Promise<void>
+  onSubmit: (amount: number, date: string, descricao: string) => Promise<boolean>
   saving: boolean
+  nextParcelaNumber: number
 }
 
 const QUICK_VALUES = [200, 400, 600, 800]
 
-export function PaymentForm({ onSubmit, saving }: PaymentFormProps) {
+export function PaymentForm({ onSubmit, saving, nextParcelaNumber }: PaymentFormProps) {
   const [showForm, setShowForm] = useState(false)
   const [amount, setAmount] = useState('400')
   const [date, setDate] = useState(getTodayLocal())
   const [descricao, setDescricao] = useState('')
   const [amountError, setAmountError] = useState('')
+  const [submitError, setSubmitError] = useState('')
+
+  const defaultDescricao = `Parcela ${nextParcelaNumber}`
 
   const handleOpen = () => {
     setDate(getTodayLocal())
     setAmount('400')
     setDescricao('')
     setAmountError('')
+    setSubmitError('')
     setShowForm(true)
   }
 
   const handleClose = () => {
     setShowForm(false)
     setAmountError('')
+    setSubmitError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,9 +45,17 @@ export function PaymentForm({ onSubmit, saving }: PaymentFormProps) {
       return
     }
     if (!date) return
+
     setAmountError('')
-    await onSubmit(value, date, descricao || `Parcela de R$ ${value.toFixed(2).replace('.', ',')}`)
-    handleClose()
+    setSubmitError('')
+
+    const success = await onSubmit(value, date, descricao || defaultDescricao)
+
+    if (success) {
+      handleClose()
+    } else {
+      setSubmitError('Não foi possível salvar. Verifique sua conexão e tente novamente.')
+    }
   }
 
   const maxDate = getTodayLocal()
@@ -69,7 +83,9 @@ export function PaymentForm({ onSubmit, saving }: PaymentFormProps) {
       className="bg-card rounded-xl p-5 border border-border shadow-card space-y-4 animate-slide-up"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground">Novo Pagamento</h3>
+        <h3 className="text-sm font-semibold text-foreground">
+          Novo Pagamento — <span className="text-primary">{defaultDescricao}</span>
+        </h3>
         <button
           type="button"
           onClick={handleClose}
@@ -81,15 +97,15 @@ export function PaymentForm({ onSubmit, saving }: PaymentFormProps) {
 
       {/* Descrição */}
       <div>
-        <label htmlFor="descricao" className="block text-xs font-medium text-muted-foreground mb-1.5">
-          Descrição <span className="text-muted-foreground/50">(opcional)</span>
+        <label htmlFor="descricao" className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+          Descrição <span className="text-muted-foreground/50">(padrão: {defaultDescricao})</span>
         </label>
         <Input
           type="text"
           id="descricao"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
-          placeholder="Ex: Parcela 4, Extra de junho..."
+          placeholder={defaultDescricao}
           maxLength={50}
         />
       </div>
@@ -143,6 +159,14 @@ export function PaymentForm({ onSubmit, saving }: PaymentFormProps) {
           max={maxDate}
         />
       </div>
+
+      {/* Erro de submissão inline */}
+      {submitError && (
+        <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-danger/8 border border-danger/20">
+          <AlertCircle className="w-3.5 h-3.5 text-danger flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-danger">{submitError}</p>
+        </div>
+      )}
 
       <div className="flex gap-3 pt-1">
         <Button type="button" onClick={handleClose} variant="secondary" className="flex-1" disabled={saving}>

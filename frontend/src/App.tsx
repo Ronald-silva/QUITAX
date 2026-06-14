@@ -30,7 +30,12 @@ export default function App() {
     const remainingBalance = Math.max(0, MOTO_VALUE - totalPaid)
     const progressPercentage = Math.min(100, (totalPaid / MOTO_VALUE) * 100)
     const weeksRemaining = Math.ceil(remainingBalance / WEEKLY_PAYMENT)
-    return { totalPaid, remainingBalance, progressPercentage, weeksRemaining }
+    // Conta apenas parcelas (exclui caução/entrada)
+    const parcelaCount = payments.filter(p => {
+      const d = p.descricao.toLowerCase()
+      return !d.includes('caução') && !d.includes('caucao') && !d.includes('inicial') && !d.includes('entrada')
+    }).length
+    return { totalPaid, remainingBalance, progressPercentage, weeksRemaining, nextParcelaNumber: parcelaCount + 1 }
   }, [payments])
 
   return (
@@ -83,6 +88,7 @@ export default function App() {
             <PaymentForm
               onSubmit={addPayment}
               saving={saving}
+              nextParcelaNumber={summary.nextParcelaNumber}
             />
             <PaymentHistory
               payments={payments}
