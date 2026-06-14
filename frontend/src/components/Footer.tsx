@@ -1,9 +1,9 @@
 export function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-surface-elevated/95 backdrop-blur-sm border-t border-border px-4 py-4 z-10">
-      <div className="max-w-md mx-auto">
-        <p className="text-xs text-center text-muted-foreground leading-relaxed">
-          "Cada quinta-feira paga é um passo a menos na rua e um passo a mais no meu futuro como desenvolvedor."
+    <footer className="mt-8 px-4 pb-6">
+      <div className="max-w-md mx-auto border-t border-border pt-4">
+        <p className="text-[11px] text-center text-muted-foreground/60 leading-relaxed italic">
+          "Cada semana paga é um passo a menos na rua e um passo a mais no meu futuro."
         </p>
       </div>
     </footer>

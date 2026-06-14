@@ -4,10 +4,3 @@ export interface Payment {
   valor: number
   data: string
 }
-
-export interface FinancialSummary {
-  totalPaid: number
-  remainingBalance: number
-  progressPercentage: number
-  weeksRemaining: number
-}

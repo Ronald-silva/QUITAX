@@ -1,4 +1,5 @@
-import { Calendar } from 'lucide-react'
+import { CalendarDays, PartyPopper } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils'
 
 interface CountdownCardProps {
   weeksRemaining: number
@@ -6,28 +7,39 @@ interface CountdownCardProps {
 }
 
 export function CountdownCard({ weeksRemaining, weeklyPayment }: CountdownCardProps) {
-  const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value)
+  if (weeksRemaining === 0) {
+    return (
+      <div className="bg-card rounded-xl p-5 border border-success/30 shadow-card animate-slide-up">
+        <div className="flex items-center gap-2.5 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-success/15 flex items-center justify-center">
+            <PartyPopper className="w-4 h-4 text-success" />
+          </div>
+          <h2 className="text-sm font-semibold text-success">Moto Quitada!</h2>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Parabéns! Você conquistou sua moto pagando sem juros.
+        </p>
+      </div>
+    )
   }
 
+  const label = weeksRemaining === 1 ? 'semana restante' : 'semanas restantes'
+
   return (
-    <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl p-6 border border-accent/30 shadow-elegant animate-slide-up">
-      <div className="flex items-center gap-3 mb-4">
-        <Calendar className="w-6 h-6 text-accent" />
-        <h2 className="text-lg font-semibold text-foreground">Contagem Regressiva</h2>
+    <div className="bg-card rounded-xl p-5 border border-border shadow-card animate-slide-up">
+      <div className="flex items-center gap-2.5 mb-4">
+        <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center">
+          <CalendarDays className="w-4 h-4 text-accent" />
+        </div>
+        <h2 className="text-sm font-semibold text-foreground">Contagem Regressiva</h2>
       </div>
-      <div className="flex items-baseline gap-2 mb-2">
-        <span className="text-5xl font-bold text-accent">
-          {weeksRemaining}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {weeksRemaining === 1 ? 'quinta-feira' : 'quintas-feiras'} restantes
-        </span>
+
+      <div className="flex items-baseline gap-2">
+        <span className="text-5xl font-bold text-accent tabular-nums">{weeksRemaining}</span>
+        <span className="text-sm text-muted-foreground">{label}</span>
       </div>
-      <p className="text-xs text-muted-foreground mt-2">
+
+      <p className="text-xs text-muted-foreground mt-3">
         Mantendo o ritmo de {formatCurrency(weeklyPayment)} por semana
       </p>
     </div>

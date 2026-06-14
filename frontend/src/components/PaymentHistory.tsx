@@ -1,14 +1,12 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Payment } from '@/types'
+import { formatCurrency } from '@/lib/utils'
 
 interface PaymentHistoryProps {
   payments: Payment[]
   onDelete: (id: string) => Promise<void>
 }
-
-const formatCurrency = (value: number): string =>
-  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString + 'T00:00:00')
