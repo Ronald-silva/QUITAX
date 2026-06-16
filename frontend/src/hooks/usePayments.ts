@@ -22,11 +22,13 @@ export function usePayments() {
   const seedInitialPayments = useCallback(async (refetch: () => Promise<void>) => {
     try {
       for (const payment of SEED_PAYMENTS) {
-        await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payment),
+        const params = new URLSearchParams({
+          action: 'add',
+          descricao: payment.descricao,
+          valor: String(payment.valor),
+          data: payment.data,
         })
+        await fetch(`${API_URL}?${params.toString()}`, { cache: 'no-store' })
         await new Promise(resolve => setTimeout(resolve, 300))
       }
       await refetch()
@@ -80,11 +82,13 @@ export function usePayments() {
     try {
       setSaving(true)
       setError(null)
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ descricao: descricao || 'Parcela semanal', valor: amount, data: date }),
+      const params = new URLSearchParams({
+        action: 'add',
+        descricao: descricao || 'Parcela semanal',
+        valor: String(amount),
+        data: date,
       })
+      const response = await fetch(`${API_URL}?${params.toString()}`, { cache: 'no-store' })
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const result = await response.json()
       if (!result.success) throw new Error(result.message)

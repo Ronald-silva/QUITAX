@@ -26,12 +26,20 @@ const SHEET_NAME = 'Pagamentos';
 // ============================================================
 
 /**
- * GET  /exec              → Lista todos os pagamentos
- * GET  /exec?action=delete&id=PAY_xxx → Deleta um pagamento por ID
+ * GET  /exec                                           → Lista todos os pagamentos
+ * GET  /exec?action=add&descricao=...&valor=...&data=... → Registra novo pagamento
+ * GET  /exec?action=delete&id=PAY_xxx                 → Deleta um pagamento por ID
+ *
+ * Nota: o add usa GET (não POST) porque o GAS bloqueia POSTs de domínios externos
+ * com erro de permissão OAuth — GET via query params não tem essa limitação.
  */
 function doGet(e) {
   try {
     const action = e.parameter && e.parameter.action;
+
+    if (action === 'add') {
+      return addPaymentViaGet(e.parameter);
+    }
 
     if (action === 'delete') {
       const id = e.parameter.id;
@@ -117,6 +125,29 @@ function doOptions(e) {
 // ============================================================
 // FUNÇÕES INTERNAS
 // ============================================================
+
+/**
+ * Registra um novo pagamento via GET query params
+ * Params: descricao, valor (número), data (YYYY-MM-DD)
+ */
+function addPaymentViaGet(params) {
+  const valor = parseFloat(params.valor);
+  if (!params.data || isNaN(valor) || valor <= 0) {
+    return createResponse({ success: false, message: 'Parâmetros inválidos: data e valor são obrigatórios' }, 400);
+  }
+
+  const sheet = getSheet();
+  const id = 'PAY_' + Date.now();
+  const descricao = params.descricao || 'Parcela semanal';
+
+  sheet.appendRow([id, descricao, valor, params.data]);
+
+  return createResponse({
+    success: true,
+    data: { id, descricao, valor, data: params.data },
+    message: 'Pagamento registrado com sucesso'
+  });
+}
 
 /**
  * Deleta um pagamento pelo ID
